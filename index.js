@@ -3,7 +3,7 @@
 const { Observable } = require('rxjs');
 const { map, flatMap, tap, count, catchError } = require('rxjs/operators');
 
-module.exports = class RxSql {
+module.exports = class RxPg {
   constructor(pool) {
     this.pool = pool;
   }
@@ -26,17 +26,17 @@ module.exports = class RxSql {
 
   transaction(...queryFunctions) {
     let connection = null;
-    let rxsql = null;
+    let rxpg = null;
     return this.getConnection().pipe(
       tap(c => connection = c),
-      map(connection => new RxSql(connection)),
-      tap(r => rxsql = r),
-      flatMap(_ => rxsql.query('BEGIN')),
-      ...queryFunctions.map(query => flatMap(prevResult => query(rxsql, prevResult))),
+      map(connection => new RxPg(connection)),
+      tap(r => rxpg = r),
+      flatMap(_ => rxpg.query('BEGIN')),
+      ...queryFunctions.map(query => flatMap(prevResult => query(rxpg, prevResult))),
       count(),
-      flatMap(_ => rxsql.query('COMMIT')),
+      flatMap(_ => rxpg.query('COMMIT')),
       catchError(err => {
-        return rxsql.query('ROLLBACK').pipe(
+        return rxpg.query('ROLLBACK').pipe(
           tap(_ => connection.release()),
           tap(_ => { throw err; })
         );
