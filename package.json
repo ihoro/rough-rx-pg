@@ -1,0 +1,35 @@
+{
+  "name": "@rough/rx-pg",
+  "version": "1.0.0",
+  "description": "A simple RxJS wrapper around node-postgres lib",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Warning: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ihoro/rough-rx-pg.git"
+  },
+  "keywords": [
+    "sql",
+    "postgresql",
+    "postgres",
+    "pg",
+    "reactive",
+    "rx",
+    "rxjs",
+    "observable"
+  ],
+  "author": "Igor Ostapenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ihoro/rough-rx-pg/issues"
+  },
+  "homepage": "https://github.com/ihoro/rough-rx-pg#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "rxjs": "^6.3.3"
+  }
+}
