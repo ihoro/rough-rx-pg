@@ -1,7 +1,7 @@
 'use strict';
 
 const { Observable } = require('rxjs');
-const { map, flatMap, tap, count, catchError } = require('rxjs/operators');
+const { map, flatMap, tap, catchError } = require('rxjs/operators');
 
 module.exports = class RxPg {
   constructor(pool) {
@@ -27,13 +27,14 @@ module.exports = class RxPg {
   transaction(...queryFunctions) {
     let connection = null;
     let rxpg = null;
+    let lastQueryResult = null;
     return this.getConnection().pipe(
       tap(c => connection = c),
       map(connection => new RxPg(connection)),
       tap(r => rxpg = r),
       flatMap(_ => rxpg.query('BEGIN')),
       ...queryFunctions.map(query => flatMap(prevResult => query(rxpg, prevResult))),
-      count(),
+      tap(r => lastQueryResult = r),
       flatMap(_ => rxpg.query('COMMIT')),
       catchError(err => {
         return rxpg.query('ROLLBACK').pipe(
@@ -41,7 +42,8 @@ module.exports = class RxPg {
           tap(_ => { throw err; })
         );
       }),
-      tap(_ => connection.release())
+      tap(_ => connection.release()),
+      map(_ => lastQueryResult)
     );
   }
 
